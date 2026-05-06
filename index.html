@@ -5,10 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Düğünümüze Hoş Geldiniz!</title>
     
-    <!-- Google Fonts: Zarif bir başlık fontu ve okunabilir bir metin fontu -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
-    
-    <!-- Cloudinary Widget Scripti -->
     <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
     
     <style>
@@ -16,7 +13,7 @@
         
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #fdfbf7; /* Kırık beyaz / krem arka plan */
+            background-color: #fdfbf7; 
             color: #4a4a4a;
             display: flex;
             flex-direction: column;
@@ -32,7 +29,8 @@
             background: white;
             padding: 40px 25px;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05); /* Hafif, zarif bir gölge */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
+            position: relative; /* Mesaj kutusunun konumlandırması için */
         }
         
         h1 {
@@ -50,7 +48,7 @@
         }
         
         .cloudinary-button {
-            background-color: #d4af37; /* Düğün konseptine uygun zarif gold rengi */
+            background-color: #d4af37; 
             color: white;
             font-family: 'Poppins', sans-serif;
             font-size: 1.1rem;
@@ -65,7 +63,7 @@
         
         .cloudinary-button:hover {
             background-color: #c5a028;
-            transform: translateY(-2px); /* Tıklanma hissi veren küçük bir animasyon */
+            transform: translateY(-2px); 
         }
         
         .names {
@@ -74,6 +72,25 @@
             margin-top: 30px;
             font-size: 1.2rem;
             color: #bdc3c7;
+        }
+
+        /* YENİ EKLENEN TEŞEKKÜR MESAJI KUTUSU TASARIMI */
+        #success-message {
+            display: none; /* Başlangıçta gizli */
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -85,11 +102,18 @@
         
         <button id="upload_widget" class="cloudinary-button">Fotoğraf Seç ve Yükle</button>
 
-        <!-- KENDİ İSİMLERİNİZİ BURAYA YAZIN -->
+        <!-- YENİ EKLENEN MESAJ ALANI -->
+        <div id="success-message">
+            Harika! Birlikte bir anımızı daha ölümsüzleştirdik. Katkınız için çok teşekkür ederiz 🤍
+        </div>
+
         <div class="names">Seher & Çağdaş ~ 2026</div> 
     </div>
 
     <script type="text/javascript">
+        // Yüklenen dosya sayısını tutacak değişken
+        let uploadedFilesCount = 0; 
+
         var myWidget = cloudinary.createUploadWidget({
             cloudName: 'SENIN_CLOUD_ADIN', // BURAYI DEĞİŞTİR
             uploadPreset: 'dugun_fotograflari', // BURAYI DEĞİŞTİR
@@ -102,17 +126,16 @@
                     "local": { "browse": "Cihazdan Seç", "main_title": "Fotoğraf Yükle" }
                 }
             },
-            // Açılan pencerenin renklerini sitenin tasarımına uyduruyoruz
             styles: { 
                 palette: {
                     window: "#FFFFFF",
                     windowBorder: "#90A0B3",
-                    tabIcon: "#d4af37", /* Gold detaylar */
+                    tabIcon: "#d4af37", 
                     menuIcons: "#5A616A",
                     textDark: "#000000",
                     textLight: "#FFFFFF",
-                    link:  "#d4af37", /* Gold detaylar */
-                    action:  "#d4af37", /* Gold detaylar */
+                    link:  "#d4af37", 
+                    action:  "#d4af37", 
                     inactiveTabIcon: "#0E2F5A",
                     error: "#F44235",
                     inProgress: "#0078FF",
@@ -121,11 +144,24 @@
                 }
             }
         }, (error, result) => { 
+            // Her başarılı yüklemede sayacı artır
             if (!error && result && result.event === "success") { 
-                console.log('Yükleme başarılı: ', result.info.secure_url); 
+                uploadedFilesCount++;
             }
+            
+            // Pencere kapatıldığında çalışacak kod
             if (result && result.event === "close") {
-                // Widget kapandığında, eğer fotoğraf yüklendiyse bir teşekkür mesajı çıkabilir
+                // Eğer en az 1 fotoğraf yüklendiyse teşekkür mesajını göster
+                if (uploadedFilesCount > 0) {
+                    const messageBox = document.getElementById("success-message");
+                    messageBox.style.display = "block";
+                    
+                    // İsteğe bağlı: Mesajı 6 saniye sonra yavaşça gizle ve sayacı sıfırla
+                    setTimeout(() => {
+                        messageBox.style.display = "none";
+                        uploadedFilesCount = 0;
+                    }, 6000);
+                }
             }
         });
 
