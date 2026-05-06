@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Düğünümüze Hoş Geldiniz!</title>
+    <!-- Cloudinary Widget Scripti -->
+    <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 50px; background-color: #fcfcfc; }
+        #upload_widget { padding: 15px 30px; font-size: 18px; background-color: #2ecc71; color: white; border: none; border-radius: 8px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h1>En Güzel Anlarımızı Bizimle Paylaşın 📸</h1>
+    <p>Çektiğiniz fotoğrafları aşağıdaki butona tıklayarak albümümüze ekleyebilirsiniz.</p>
+
+    <button id="upload_widget" class="cloudinary-button">Fotoğraf Yükle</button>
+
+    <script type="text/javascript">
+        var myWidget = cloudinary.createUploadWidget({
+            cloudName: 'SENIN_CLOUD_ADIN', // Buraya Cloudinary cloud name'ini yaz
+            uploadPreset: 'dugun_fotograflari', // Buraya oluşturduğun unsigned preset adını yaz
+            sources: ['local', 'camera'], // Kullanıcıya hem galeriden hem kameradan çekme hakkı ver
+            multiple: true, // Aynı anda birden fazla fotoğraf seçebilsinler
+            language: "tr", // Arayüz Türkçe olsun
+            text: {
+                "tr": {
+                    "menu": { "files": "Dosyalarım", "camera": "Kamera" },
+                    "local": { "browse": "Cihazdan Seç", "main_title": "Fotoğraf Yükle" }
+                }
+            }
+        }, (error, result) => { 
+            if (!error && result && result.event === "success") { 
+                console.log('Başarıyla yüklendi! İşte linki: ', result.info.secure_url); 
+                alert("Harika! Fotoğrafınız albüme eklendi. Teşekkür ederiz!");
+            }
+        });
+
+        document.getElementById("upload_widget").addEventListener("click", function(){
+            myWidget.open();
+        }, false);
+    </script>
+
+</body>
+</html>
