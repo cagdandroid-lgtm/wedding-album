@@ -4,37 +4,128 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Düğünümüze Hoş Geldiniz!</title>
+    
+    <!-- Google Fonts: Zarif bir başlık fontu ve okunabilir bir metin fontu -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+    
     <!-- Cloudinary Widget Scripti -->
     <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
+    
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 50px; background-color: #fcfcfc; }
-        #upload_widget { padding: 15px 30px; font-size: 18px; background-color: #2ecc71; color: white; border: none; border-radius: 8px; cursor: pointer; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #fdfbf7; /* Kırık beyaz / krem arka plan */
+            color: #4a4a4a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 500px;
+            background: white;
+            padding: 40px 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); /* Hafif, zarif bir gölge */
+        }
+        
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: #7f8c8d;
+        }
+        
+        .cloudinary-button {
+            background-color: #d4af37; /* Düğün konseptine uygun zarif gold rengi */
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 15px 35px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+        }
+        
+        .cloudinary-button:hover {
+            background-color: #c5a028;
+            transform: translateY(-2px); /* Tıklanma hissi veren küçük bir animasyon */
+        }
+        
+        .names {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            margin-top: 30px;
+            font-size: 1.2rem;
+            color: #bdc3c7;
+        }
     </style>
 </head>
 <body>
 
-    <h1>En Güzel Anlarımızı Bizimle Paylaşın 📸</h1>
-    <p>Çektiğiniz fotoğrafları aşağıdaki butona tıklayarak albümümüze ekleyebilirsiniz.</p>
+    <div class="container">
+        <h1>En Güzel Anlarımızı Bizimle Paylaşın 📸</h1>
+        <p>Bu özel günümüzde yanımızda olduğunuz için teşekkür ederiz. Çektiğiniz fotoğraf ve videoları aşağıdaki butona tıklayarak dijital albümümüze ekleyebilirsiniz.</p>
+        
+        <button id="upload_widget" class="cloudinary-button">Fotoğraf Seç ve Yükle</button>
 
-    <button id="upload_widget" class="cloudinary-button">Fotoğraf Yükle</button>
+        <!-- KENDİ İSİMLERİNİZİ BURAYA YAZIN -->
+        <div class="names">Seher & Çağdaş ~ 2026</div> 
+    </div>
 
     <script type="text/javascript">
         var myWidget = cloudinary.createUploadWidget({
-            cloudName: 'SENIN_CLOUD_ADIN', // Buraya Cloudinary cloud name'ini yaz
-            uploadPreset: 'dugun_fotograflari', // Buraya oluşturduğun unsigned preset adını yaz
-            sources: ['local', 'camera'], // Kullanıcıya hem galeriden hem kameradan çekme hakkı ver
-            multiple: true, // Aynı anda birden fazla fotoğraf seçebilsinler
-            language: "tr", // Arayüz Türkçe olsun
+            cloudName: 'SENIN_CLOUD_ADIN', // BURAYI DEĞİŞTİR
+            uploadPreset: 'dugun_fotograflari', // BURAYI DEĞİŞTİR
+            sources: ['local', 'camera'], 
+            multiple: true,
+            language: "tr", 
             text: {
                 "tr": {
                     "menu": { "files": "Dosyalarım", "camera": "Kamera" },
                     "local": { "browse": "Cihazdan Seç", "main_title": "Fotoğraf Yükle" }
                 }
+            },
+            // Açılan pencerenin renklerini sitenin tasarımına uyduruyoruz
+            styles: { 
+                palette: {
+                    window: "#FFFFFF",
+                    windowBorder: "#90A0B3",
+                    tabIcon: "#d4af37", /* Gold detaylar */
+                    menuIcons: "#5A616A",
+                    textDark: "#000000",
+                    textLight: "#FFFFFF",
+                    link:  "#d4af37", /* Gold detaylar */
+                    action:  "#d4af37", /* Gold detaylar */
+                    inactiveTabIcon: "#0E2F5A",
+                    error: "#F44235",
+                    inProgress: "#0078FF",
+                    complete: "#20B832",
+                    sourceBg: "#E4EBF1"
+                }
             }
         }, (error, result) => { 
             if (!error && result && result.event === "success") { 
-                console.log('Başarıyla yüklendi! İşte linki: ', result.info.secure_url); 
-                alert("Harika! Fotoğrafınız albüme eklendi. Teşekkür ederiz!");
+                console.log('Yükleme başarılı: ', result.info.secure_url); 
+            }
+            if (result && result.event === "close") {
+                // Widget kapandığında, eğer fotoğraf yüklendiyse bir teşekkür mesajı çıkabilir
             }
         });
 
