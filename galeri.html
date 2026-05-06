@@ -107,14 +107,20 @@
             cursor: pointer;
         }
 
-        .masonry-item img {
+.masonry-item img {
             width: 100%;
             display: block;
-            transition: transform 0.3s ease;
+            /* Hem büyüme hem de renk değişimi için yumuşak bir geçiş (transition) ekledik */
+            transition: transform 0.4s ease, filter 0.4s ease; 
+            
+            /* Sitenin ruhuna uygun, yormayan tatlı bir sepya efekti */
+            filter: sepia(45%) contrast(90%) brightness(105%); 
         }
 
         .masonry-item:hover img {
             transform: scale(1.03); 
+            /* Üzerine gelince sihir gibi orijinal renklerine döner */
+            filter: sepia(0%) contrast(100%) brightness(100%); 
         }
 
         /* GÖNDEREN KİŞİ İSMİ ETİKETİ */
