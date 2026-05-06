@@ -7,7 +7,7 @@
     
     <!-- Fonts and Scripts -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
-    <script src="https://product-gallery.cloudinary.com/v1.0/all.js" type="text/javascript"></script>
+    <script src="https://product-gallery.cloudinary.com/all.js" type="text/javascript"></script>
     
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -63,11 +63,15 @@
             color: white;
         }
 
-        /* Gallery container */
+/* Gallery container */
         #my-gallery {
             max-width: 1200px;
             margin: 0 auto;
-            display: none; /* Başlangıçta gizli */
+            /* display: none; YERİNE AŞAĞIDAKİLERİ KULLANIYORUZ */
+            opacity: 0; 
+            height: 0; 
+            overflow: hidden;
+            transition: opacity 0.5s ease-in;
         }
 
         /* YÜKLENİYOR... VE BOŞ DURUM STİLLERİ */
@@ -117,7 +121,7 @@
             ],
             displayProps: {
                 mode: "expanded", // Klasik yerine masonry (duvar ustası) görünümü
-                columns: [2, 3],  // Mobil için 2, daha büyük ekranlar için 3 sütun
+                columns: 3,  // Mobil için 2, daha büyük ekranlar için 3 sütun
                 spacing: 15       // Fotoğraflar arası boşluk (piksel)
             },
             zoomProps: { 
@@ -158,15 +162,20 @@
 
         myGallery.render();
 
-        // --- YENİ: Galeri durum kontrolü ---
+     // --- YENİ: Galeri durum kontrolü ---
         myGallery.on('gallery:rendered', (data) => {
             const placeholder = document.getElementById('gallery-placeholder');
             const galleryContainer = document.getElementById('my-gallery');
 
-            if (data.assets && data.assets.length > 0) {
-                // Fotoğraf varsa, yükleyiciyi gizle ve galeriyi göster
+            // Cloudinary'nin yüklediği fotoğraf sayısını kontrol et
+            if (data.totalCount > 0) {
+                // Fotoğraf varsa, yükleyiciyi tamamen gizle
                 placeholder.style.display = 'none';
-                galleryContainer.style.display = 'block';
+                
+                // Galeriyi görünür yap (Yüksekliği otomatik bırak ve şeffaflığı kaldır)
+                galleryContainer.style.height = 'auto';
+                galleryContainer.style.overflow = 'visible';
+                galleryContainer.style.opacity = '1';
             } else {
                 // Fotoğraf yoksa, yükleyici alanında bir uyarı göster
                 placeholder.innerHTML = '<h3>Henüz Anı Biriktiremedik... 😔</h3><p>Galeride hiç fotoğraf yok. İlk anıyı paylaşan siz olun!</p>';
