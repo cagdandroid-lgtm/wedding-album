@@ -74,23 +74,139 @@
             color: #bdc3c7;
         }
 
-        /* YENİ EKLENEN TEŞEKKÜR MESAJI KUTUSU TASARIMI */
-        #success-message {
+        /* GALERİ BUTONU TASARIMI */
+        .gallery-button {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 12px 30px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #d4af37;
+            background-color: transparent;
+            text-decoration: none;
+            border: 2px solid #d4af37;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .gallery-button:hover {
+            background-color: #d4af37;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* FORM VE MESAJ KUTUSU TASARIMI */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            color: #4a4a4a;
+            transition: border-color 0.3s ease;
+            resize: vertical;
+        }
+
+        .input-group input:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+        }
+
+        #status-message {
             display: none; /* Başlangıçta gizli */
             margin-top: 25px;
             padding: 15px;
-            background-color: #f0fdf4;
-            border: 1px solid #bbf7d0;
-            color: #166534;
             border-radius: 10px;
             font-weight: 500;
             font-size: 0.95rem;
             animation: fadeIn 0.5s ease-in-out;
         }
 
+        .msg-success {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+
+        .msg-warning {
+            background-color: #fffbeb;
+            border: 1px solid #fde68a;
+            color: #92400e;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* HATA DURUMU İÇİN ANİMASYON VE STİL */
+        .input-group input.error {
+            border-color: #e74c3c;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translateX(-5px); }
+            20%, 80% { transform: translateX(5px); }
+            30%, 50%, 70% { transform: translateX(-3px); }
+            40%, 60% { transform: translateX(3px); }
+        }
+
+        /* YÜKLEME EFEKTİ (SPINNER) TASARIMI */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+            display: none; /* Başlangıçta gizli */
+        }
+
+        .cloudinary-button.loading .spinner {
+            display: inline-block;
+        }
+
+        .cloudinary-button.loading {
+            opacity: 0.8;
+            cursor: wait;
+        }
+
+        /* MOBİL UYUM (RESPONSIVE) AYARLARI */
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            .input-group input, .input-group textarea {
+                padding: 15px 18px;
+                font-size: 1rem;
+            }
+            
+            .cloudinary-button, .gallery-button {
+                width: 100%;
+                padding: 18px 20px;
+                font-size: 1.15rem;
+            }
         }
     </style>
 </head>
@@ -100,73 +216,110 @@
         <h1>En Güzel Anlarımızı Bizimle Paylaşın 📸</h1>
         <p>Bu özel günümüzde yanımızda olduğunuz için teşekkür ederiz. Çektiğiniz fotoğraf ve videoları aşağıdaki butona tıklayarak dijital albümümüze ekleyebilirsiniz.</p>
         
-        <button id="upload_widget" class="cloudinary-button">Fotoğraf Seç ve Yükle</button>
-
-        <!-- YENİ EKLENEN MESAJ ALANI -->
-        <div id="success-message">
-            Harika! Birlikte bir anımızı daha ölümsüzleştirdik. Katkınız için çok teşekkür ederiz 🤍
+        <div class="input-group">
+            <input type="text" id="guest-name" placeholder="Adınız Soyadınız (Örn: Ayşe & Ali)" />
+            <textarea id="guest-message" placeholder="Bize bir not bırakın (İsteğe bağlı)" rows="3"></textarea>
         </div>
+
+        <button id="upload_widget" class="cloudinary-button">
+            <span class="spinner"></span>
+            <span class="btn-text">Fotoğraf Seç ve Yükle</span>
+        </button>
+
+        <a href="galeri.html" class="gallery-button">Galeriyi Görüntüle 🖼️</a>
+
+        <div id="status-message"></div>
 
         <div class="names">Seher & Çağdaş ~ 2026</div> 
     </div>
 
     <script type="text/javascript">
-        // Yüklenen dosya sayısını tutacak değişken
-        let uploadedFilesCount = 0; 
+        document.getElementById("upload_widget").addEventListener("click", function(){
+            const guestNameInput = document.getElementById("guest-name");
+            const guestName = guestNameInput.value.trim();
 
-        var myWidget = cloudinary.createUploadWidget({
-            cloudName: 'dwovhmnwy', // BURAYI DEĞİŞTİR
-            uploadPreset: 'dugun_fotograflari', // BURAYI DEĞİŞTİR
-            sources: ['local', 'camera'], 
-            multiple: true,
-            language: "tr", 
-            text: {
-                "tr": {
-                    "menu": { "files": "Dosyalarım", "camera": "Kamera" },
-                    "local": { "browse": "Cihazdan Seç", "main_title": "Fotoğraf Yükle" }
-                }
-            },
-            styles: { 
-                palette: {
-                    window: "#FFFFFF",
-                    windowBorder: "#90A0B3",
-                    tabIcon: "#d4af37", 
-                    menuIcons: "#5A616A",
-                    textDark: "#000000",
-                    textLight: "#FFFFFF",
-                    link:  "#d4af37", 
-                    action:  "#d4af37", 
-                    inactiveTabIcon: "#0E2F5A",
-                    error: "#F44235",
-                    inProgress: "#0078FF",
-                    complete: "#20B832",
-                    sourceBg: "#E4EBF1"
-                }
+            // --- YENİ: İsim alanı kontrolü ---
+            if (guestName === "") {
+                guestNameInput.classList.add("error");
+                // Hata animasyonu bittikten sonra sınıfı kaldır
+                setTimeout(() => {
+                    guestNameInput.classList.remove("error");
+                }, 600);
+                return; // Fonksiyonu burada durdur, widget'ı açma
             }
-        }, (error, result) => { 
-            // Her başarılı yüklemede sayacı artır
-            if (!error && result && result.event === "success") { 
-                uploadedFilesCount++;
-            }
+            // --- Kontrol sonu ---
+
+            const btn = document.getElementById("upload_widget");
+            btn.classList.add("loading"); // Butona tıklandığında loading sınıfını ekle
             
-            // Pencere kapatıldığında çalışacak kod
-            if (result && result.event === "close") {
-                // Eğer en az 1 fotoğraf yüklendiyse teşekkür mesajını göster
-                if (uploadedFilesCount > 0) {
-                    const messageBox = document.getElementById("success-message");
-                    messageBox.style.display = "block";
+            // const guestName = document.getElementById("guest-name").value.trim() || 'Belirtilmedi'; // Bu satır artık yukarıda tanımlı
+            const guestMessage = document.getElementById("guest-message").value.trim() || 'Mesaj Yok';
+            
+            let uploadedFilesCount = 0; // Her açılışta sıfırdan başlar
+            const messageBox = document.getElementById("status-message");
+            messageBox.style.display = "none";
+
+            cloudinary.openUploadWidget({
+                cloudName: 'dwovhmnwy', // BURAYI DEĞİŞTİR
+                uploadPreset: 'dugun_fotograflari', // BURAYI DEĞİŞTİR
+                tags: ['seher-cagdas-2026'], // GALERİ İÇİN EKLENDİ
+                sources: ['local', 'camera'], 
+                multiple: true,
+                language: "tr", 
+                context: {
+                    kimden: guestName,
+                    mesaj: guestMessage
+                },
+                text: {
+                    "tr": {
+                        "menu": { "files": "Dosyalarım", "camera": "Kamera" },
+                        "local": { "browse": "Cihazdan Seç", "main_title": "Fotoğraf Yükle" }
+                    }
+                },
+                styles: { 
+                    palette: {
+                        window: "#FFFFFF",
+                        windowBorder: "#90A0B3",
+                        tabIcon: "#d4af37", 
+                        menuIcons: "#5A616A",
+                        textDark: "#000000",
+                        textLight: "#FFFFFF",
+                        link:  "#d4af37", 
+                        action:  "#d4af37", 
+                        inactiveTabIcon: "#0E2F5A",
+                        error: "#F44235",
+                        inProgress: "#0078FF",
+                        complete: "#20B832",
+                        sourceBg: "#E4EBF1"
+                    }
+                }
+            }, (error, result) => { 
+                if (!error && result && result.event === "success") { 
+                    uploadedFilesCount++;
+                }
+                
+                if (result && result.event === "close") {
+                    btn.classList.remove("loading"); // Pencere kapandığında loading sınıfını kaldır
                     
-                    // İsteğe bağlı: Mesajı 6 saniye sonra yavaşça gizle ve sayacı sıfırla
+                    if (uploadedFilesCount > 0) {
+                        messageBox.innerHTML = "Harika! Birlikte bir anımızı daha ölümsüzleştirdik. Katkınız için çok teşekkür ederiz 🤍";
+                        messageBox.className = "msg-success";
+                        messageBox.style.display = "block";
+                        
+                        // Başarılı yükleme sonrasında form alanlarını temizleyebilirsiniz (opsiyonel)
+                        document.getElementById("guest-name").value = "";
+                        document.getElementById("guest-message").value = "";
+                    } else {
+                        messageBox.innerHTML = "Fotoğraf yüklemekten vazgeçtiniz. Belki daha sonra denemek istersiniz? 😊";
+                        messageBox.className = "msg-warning";
+                        messageBox.style.display = "block";
+                    }
+                    
                     setTimeout(() => {
                         messageBox.style.display = "none";
-                        uploadedFilesCount = 0;
                     }, 6000);
                 }
-            }
-        });
-
-        document.getElementById("upload_widget").addEventListener("click", function(){
-            myWidget.open();
+            });
         }, false);
     </script>
 
