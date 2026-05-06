@@ -59,6 +59,7 @@
             border: 1.5px solid #d4af37;
             border-radius: 30px;
             transition: all 0.3s ease;
+            cursor: pointer;
         }
         
         .back-button:hover { 
@@ -187,7 +188,7 @@
         @media (max-width: 900px) { #masonry-gallery { column-count: 2; } }
         @media (max-width: 500px) { 
             #masonry-gallery { column-count: 1; } 
-            #scrollTopBtn { bottom: 20px; right: 20px; padding: 10px; } /* Mobilde butonu biraz küçülttük */
+            #scrollTopBtn { bottom: 20px; right: 20px; padding: 10px; } 
         }
     </style>
 </head>
@@ -226,6 +227,16 @@
 
     <!-- FOTOĞRAFLARIN ALTINDAKİ YENİ BUTON ALANI -->
     <div class="bottom-section" id="bottom-section">
+        
+        <!-- YENİ: DAHA FAZLA GÖSTER BUTONU -->
+        <button id="loadMoreBtn" class="back-button" style="display: none; margin: 0 auto 40px auto; background-color: #fbf8f1;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Daha Fazla Göster
+        </button>
+
         <p class="bottom-text">Sizin de eklemek istediğiniz anılarınız var mı?</p>
         <a href="index.html" class="back-button">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -250,10 +261,57 @@
     <script>
         const cloudName = "dwovhmnwy";
         const tag = "seher-cagdas-2026";
-        const url = `https://res.cloudinary.com/${cloudName}/image/list/${tag}.json`;
+        
+        // ÖNBELLEK ÇÖZÜMÜ: URL'nin sonuna anlık saati ekleyerek Cloudinary'yi hep taze listeyi vermeye zorluyoruz
+        const url = `https://res.cloudinary.com/${cloudName}/image/list/${tag}.json?t=${new Date().getTime()}`;
 
         // Fotoğrafın üzerine eklenecek zarif mini kamera SVG'si 
         const miniCameraIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg>`;
+
+        // --- SAYFALAMA (PAGINATION) DEĞİŞKENLERİ ---
+        let allImages = [];
+        let currentIndex = 0;
+        const itemsPerLoad = 15; // Ekrana her tıklamada kaç fotoğraf geleceği
+
+        function renderImages() {
+            const gallery = document.getElementById('masonry-gallery');
+            const nextImages = allImages.slice(currentIndex, currentIndex + itemsPerLoad);
+            
+            nextImages.forEach(img => {
+                const fullResUrl = `https://res.cloudinary.com/${cloudName}/image/upload/v${img.version}/${img.public_id}.${img.format}`;
+                // OPTİMİZASYON: w_600'ü w_400 yaptık.
+                const optimizedUrl = `https://res.cloudinary.com/${cloudName}/image/upload/w_400,q_auto,f_auto/v${img.version}/${img.public_id}.${img.format}`;
+                
+                let kimden = "";
+                if(img.context && img.context.custom && img.context.custom.kimden) {
+                    kimden = img.context.custom.kimden;
+                }
+
+                const item = document.createElement('a');
+                item.href = fullResUrl; 
+                item.className = "masonry-item";
+                
+                if(kimden) { item.setAttribute("data-caption", `${kimden} tarafından eklendi`); }
+                
+                item.innerHTML = `
+                    <img src="${optimizedUrl}" loading="lazy" alt="Düğün Fotoğrafı">
+                    ${kimden ? `<div class="sender-info">${miniCameraIcon} ${kimden}</div>` : ''}
+                `;
+                
+                gallery.appendChild(item);
+            });
+
+            baguetteBox.run('#masonry-gallery');
+            currentIndex += itemsPerLoad;
+            
+            // Daha yüklenecek fotoğraf kaldıysa butonu göster, yoksa gizle
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            if(currentIndex >= allImages.length) {
+                loadMoreBtn.style.display = 'none';
+            } else {
+                loadMoreBtn.style.display = 'inline-flex';
+            }
+        }
 
         fetch(url)
             .then(response => response.json())
@@ -262,44 +320,34 @@
                 document.getElementById('gallery-placeholder').style.display = 'none';
                 document.getElementById('bottom-section').style.display = 'block'; 
                 
-                const gallery = document.getElementById('masonry-gallery');
+                // Tüm listeyi alıyoruz
+                allImages = data.resources;
                 
-                data.resources.forEach(img => {
-                    const fullResUrl = `https://res.cloudinary.com/${cloudName}/image/upload/v${img.version}/${img.public_id}.${img.format}`;
-                    const optimizedUrl = `https://res.cloudinary.com/${cloudName}/image/upload/w_600,q_auto,f_auto/v${img.version}/${img.public_id}.${img.format}`;
-                    
-                    let kimden = "";
-                    if(img.context && img.context.custom && img.context.custom.kimden) {
-                        kimden = img.context.custom.kimden;
-                    }
-
-                    const item = document.createElement('a');
-                    item.href = fullResUrl; 
-                    item.className = "masonry-item";
-                    
-                    if(kimden) { item.setAttribute("data-caption", `${kimden} tarafından eklendi`); }
-                    
-                    item.innerHTML = `
-                        <img src="${optimizedUrl}" loading="lazy" alt="Düğün Fotoğrafı">
-                        ${kimden ? `<div class="sender-info">${miniCameraIcon} ${kimden}</div>` : ''}
-                    `;
-                    
-                    gallery.appendChild(item);
-                });
-
-                baguetteBox.run('#masonry-gallery');
+                if(allImages.length > 0) {
+                    renderImages(); // İlk 15 fotoğrafı ekrana bas
+                } else {
+                    document.getElementById('gallery-placeholder').style.display = 'block';
+                    document.getElementById('gallery-placeholder').innerHTML = '<p>Henüz anı eklenmemiş. İlk izi siz bırakın!</p>';
+                    document.getElementById('bottom-section').style.display = 'none';
+                }
             })
             .catch(err => {
                 console.error("Hata:", err);
-                document.getElementById('gallery-placeholder').innerHTML = '<p>Henüz fotoğraf yüklenmemiş veya galeride bir sorun oluştu.</p>';
+                document.getElementById('gallery-placeholder').style.display = 'block';
+                document.getElementById('gallery-placeholder').innerHTML = '<p>Henüz anı eklenmemiş veya liste güncelleniyor. Lütfen daha sonra tekrar deneyin.</p>';
+                document.getElementById('bottom-section').style.display = 'none';
             });
+
+        // --- DAHA FAZLA GÖSTER BUTONUNA TIKLAMA OLAYI ---
+        document.getElementById('loadMoreBtn').addEventListener('click', function() {
+            renderImages();
+        });
 
         // --- YUKARI ÇIK BUTONU MANTIĞI ---
         const topBtn = document.getElementById("scrollTopBtn");
 
         // Sayfa kaydırıldığında butonu göster/gizle
         window.addEventListener("scroll", () => {
-            // Eğer 300 pikselden fazla aşağı inildiyse butonu göster
             if (window.pageYOffset > 300) {
                 topBtn.classList.add("show");
             } else {
