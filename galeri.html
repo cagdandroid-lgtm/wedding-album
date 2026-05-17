@@ -14,6 +14,18 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
+        /* ZARİF KAYDIRMA ÇUBUĞU (SCROLLBAR) */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #FAFAFA; }
+        ::-webkit-scrollbar-thumb { 
+            background: #F0B3CE; 
+            border-radius: 5px; 
+            border: 2px solid #FAFAFA;
+        }
+        ::-webkit-scrollbar-thumb:hover { 
+            background: #CF4B86; 
+        }
+
         body {
             font-family: 'Montserrat', sans-serif;
             background-color: #FAFAFA; /* Temiz ve porselen beyazı */
@@ -33,6 +45,7 @@
             color: #B81165; /* Zarif ama canlı macenta */
             margin-bottom: 10px;
             line-height: 1.2;
+            text-shadow: 0 2px 15px rgba(184, 17, 101, 0.15); /* Hafif pembe ışıltı */
         }
 
         h1 svg {
@@ -120,6 +133,7 @@
             display: block;
             /* Hem büyüme hem de renk değişimi için yumuşak bir geçiş (transition) ekledik */
             transition: transform 0.4s ease, filter 0.4s ease; 
+            will-change: transform, filter; 
             
             /* Sitenin ruhuna uygun, yormayan tatlı bir sepya efekti */
             filter: sepia(25%) contrast(100%) brightness(105%); 
@@ -258,6 +272,7 @@
             opacity: 0;
             visibility: hidden;
             transform: translateY(20px);
+            will-change: transform, opacity, visibility;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -282,14 +297,26 @@
             height: 320px;
             pointer-events: none;
         }
+        
+        /* ÇİÇEKLER İÇİN NEFES ALMA EFEKTİ */
+        @keyframes floralBreathe {
+            0%, 100% { transform: scale(1) rotate(var(--rot, 0deg)); }
+            50% { transform: scale(1.03) rotate(calc(var(--rot, 0deg) + 1.5deg)); }
+        }
+
         .floral-top-left {
             top: -60px;
             left: -60px;
+            --rot: 0deg;
+            animation: floralBreathe 8s ease-in-out infinite;
+            will-change: transform;
         }
         .floral-bottom-right {
             bottom: -60px;
             right: -60px;
-            transform: rotate(180deg);
+            --rot: 180deg;
+            animation: floralBreathe 8s ease-in-out infinite reverse;
+            will-change: transform;
         }
 
         /* MOBİL UYUM */
