@@ -12,6 +12,18 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
+        /* ZARİF KAYDIRMA ÇUBUĞU (SCROLLBAR) */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #FAFAFA; }
+        ::-webkit-scrollbar-thumb { 
+            background: #F0B3CE; 
+            border-radius: 5px; 
+            border: 2px solid #FAFAFA;
+        }
+        ::-webkit-scrollbar-thumb:hover { 
+            background: #CF4B86; 
+        }
+
         body {
             font-family: 'Montserrat', sans-serif; 
             background-color: #FAFAFA; /* Temiz ve porselen beyazı */
@@ -22,42 +34,62 @@
             justify-content: center;
             min-height: 100vh;
             text-align: center;
-            padding: 20px;
+            padding: 10px;
         }
         
         .container {
             width: 100%;
             max-width: 550px;
             background: white;
-            padding: 50px 35px;
+            padding: 35px 25px;
             border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.04); 
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08); 
             position: relative; 
             transition: filter 0.4s ease;
         }
         
         h1 {
             font-family: 'Cormorant Garamond', serif; 
-            font-size: 3.5rem;
+            font-size: 2.8rem;
             font-weight: 700;
             color: #B81165; /* Zarif ama canlı macenta */
-            margin-bottom: 5px;
+            margin-bottom: 0px;
             line-height: 1.2;
+            text-shadow: 0 2px 15px rgba(184, 17, 101, 0.15); /* Hafif pembe ışıltı */
         }
         
         h2 {
             font-family: 'Cormorant Garamond', serif; 
-            font-size: 1.8rem;
+            font-size: 1.4rem;
             font-weight: 600;
             color: #CF4B86; /* Yaban mersini pembesi */
-            margin-bottom: 20px;
+            margin-bottom: 5px;
         }
 
         p {
-            font-size: 0.95rem;
-            line-height: 1.7;
-            margin-bottom: 30px;
+            font-size: 0.85rem;
+            line-height: 1.45;
+            margin-bottom: 5px;
             color: #4B5563; /* Daha dolgun bir alt metin rengi */
+        }
+
+        /* SIRALI GÖRÜNME ANİMASYONU İÇİN SINIFLAR */
+        .seq-element {
+            opacity: 0;
+            transform: translateY(12px);
+            transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+            pointer-events: none; /* Gizliyken tıklanmayı engelle */
+        }
+        .seq-element.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        /* YAZI KUTUSU SABİT YÜKSEKLİK */
+        #typing-text {
+            height: 120px;
+            transition: font-size 0.5s ease;
         }
 
         /* DAKTİLO İMLECİ ANİMASYONU */
@@ -72,8 +104,8 @@
         /* ZARİF ÇİZGİ (AYRAÇ) EFEKTİ */
         .elegant-divider {
             height: 1px;
-            background: linear-gradient(to right, transparent, rgba(207, 75, 134, 0.8), transparent);
-            margin: -5px auto 25px auto;
+            background: linear-gradient(to right, transparent, rgba(184, 17, 101, 0.8), transparent);
+            margin: 12px auto 18px auto; /* Üst ve alt boşluğu biraz daha artırıldı */
             width: 0%;
             opacity: 0;
             transition: width 1.2s ease-in-out, opacity 1.2s ease-in-out;
@@ -101,7 +133,7 @@
             font-family: 'Montserrat', sans-serif;
             font-size: 1.05rem;
             font-weight: 600;
-            padding: 16px 35px;
+            padding: 12px 25px;
             border: none;
             border-radius: 30px;
             cursor: pointer;
@@ -111,9 +143,17 @@
             align-items: center;
             justify-content: center;
             width: 100%;
+            animation: softPulse 3s infinite; /* Davetkar nabız efekti */
+            will-change: box-shadow, transform;
+        }
+
+        @keyframes softPulse {
+            0%, 100% { box-shadow: 0 6px 20px rgba(240, 179, 206, 0.45); }
+            50% { box-shadow: 0 6px 25px rgba(240, 179, 206, 0.8), 0 0 15px rgba(240, 179, 206, 0.4); transform: scale(1.01); }
         }
         
         .cloudinary-button:hover {
+            animation: none; /* Üzerine gelince animasyonu durdur */
             background-color: #EBA1C1; /* Biraz daha belirgin pembe */
             transform: translateY(-2px); 
             box-shadow: 0 8px 25px rgba(240, 179, 206, 0.6);
@@ -124,8 +164,8 @@
             align-items: center;
             justify-content: center;
             width: 100%;
-            margin-top: 15px;
-            padding: 14px 30px;
+            margin-top: 10px;
+            padding: 12px 25px;
             font-family: 'Montserrat', sans-serif;
             font-size: 1rem;
             font-weight: 600;
@@ -147,14 +187,14 @@
         .input-group {
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            margin-bottom: 25px;
+            gap: 8px;
+            margin-bottom: 12px;
             text-align: left;
         }
 
         .input-group input, .input-group textarea {
             width: 100%;
-            padding: 14px 18px;
+            padding: 10px 15px;
             border: 1px solid #e2e8f0;
             border-radius: 10px;
             font-family: 'Montserrat', sans-serif;
@@ -171,11 +211,22 @@
         }
 
         /* ROMANTİK İSİM İMZASI */
+        .signature-section {
+            margin-top: 15px;
+        }
         .names {
             font-family: 'Great Vibes', cursive;
-            margin-top: 40px;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
+            color: #B81165;
+            margin-bottom: 5px;
+        }
+        .date-signature {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 3px;
             color: #CF4B86;
+            text-transform: uppercase;
         }
 
         #status-message {
@@ -231,6 +282,7 @@
             background-color: #F0B3CE; /* Bale pembesi uçuşan tanecikler */
             border-radius: 50%;
             animation: floatParticle linear infinite;
+            will-change: transform, opacity;
         }
         @keyframes floatParticle {
             0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
@@ -247,21 +299,34 @@
             height: 320px;
             pointer-events: none;
         }
+        
+        /* ÇİÇEKLER İÇİN NEFES ALMA EFEKTİ */
+        @keyframes floralBreathe {
+            0%, 100% { transform: scale(1) rotate(var(--rot, 0deg)); }
+            50% { transform: scale(1.03) rotate(calc(var(--rot, 0deg) + 1.5deg)); }
+        }
+
         .floral-top-left {
             top: -60px;
             left: -60px;
+            --rot: 0deg;
+            animation: floralBreathe 8s ease-in-out infinite;
+            will-change: transform;
         }
         .floral-bottom-right {
             bottom: -60px;
             right: -60px;
-            transform: rotate(180deg);
+            --rot: 180deg;
+            animation: floralBreathe 8s ease-in-out infinite reverse;
+            will-change: transform;
         }
 
         @media (max-width: 600px) {
-            .container { padding: 40px 20px; }
-            h1 { font-size: 2.8rem; }
-            h2 { font-size: 1.5rem; }
-            #typing-text { min-height: 140px; } 
+            .container { padding: 25px 15px; }
+            h1 { font-size: 2.1rem; }
+            h2 { font-size: 1.15rem; }
+            #typing-text { height: 165px; font-size: 0.82rem; } 
+            #typing-text.finished-text { font-size: 0.8rem; }
             .floral-corner { width: 160px; height: 160px; }
             .floral-top-left { top: -30px; left: -30px; }
             .floral-bottom-right { bottom: -30px; right: -30px; }
@@ -304,10 +369,10 @@
     </svg>
 
     <div class="container">
-        <h1>
+        <h1 class="seq-element" id="seq-h1">
             Hoşgeldiniz!
         </h1>
-        <h2>
+        <h2 class="seq-element" id="seq-h2">
             Hikayemize Bir İz Bırakın
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon">
                 <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
@@ -316,15 +381,15 @@
         </h2>
         
         <!-- YAZININ ANİMASYONLA GELECEĞİ BOŞ KUTU -->
-        <p id="typing-text" style="min-height: 110px;"></p>
+        <p id="typing-text"></p>
         <div id="text-divider" class="elegant-divider"></div>
         
-        <div class="input-group">
+        <div class="input-group seq-element" id="seq-form">
             <input type="text" id="guest-name" placeholder="Adınız Soyadınız (Örn: Ayşe & Ali)" />
-            <textarea id="guest-message" placeholder="Bize bir not bırakın (İsteğe bağlı)" rows="3"></textarea>
+            <textarea id="guest-message" placeholder="Bize bir not bırakın (İsteğe bağlı)" rows="2"></textarea>
         </div>
 
-        <button id="upload_widget" class="cloudinary-button">
+        <button id="upload_widget" class="cloudinary-button seq-element">
             <span class="spinner"></span>
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon btn-icon">
                 <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
@@ -334,7 +399,7 @@
             <span class="btn-text">Anı Ekle</span>
         </button>
 
-        <a href="galeri.html" class="gallery-button">
+        <a href="galeri.html" class="gallery-button seq-element" id="seq-gallery-btn">
             <!-- Albüm/Galeri İkonu -->
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon btn-icon">
                 <path d="M18 22H4a2 2 0 0 1-2-2V6"></path>
@@ -347,8 +412,10 @@
 
         <div id="status-message"></div>
 
-        <div class="names">~ Seher & Çağdaş ~</div> 
-        <div class="names">~ 19/07/2026~</div> 
+        <div class="signature-section seq-element" id="seq-signature">
+            <div class="names">Seher & Çağdaş</div> 
+            <div class="date-signature">19 Temmuz 2026</div> 
+        </div>
     </div>
 
     <script type="text/javascript">
@@ -359,19 +426,33 @@
         const part2 = "Şaka şaka! İşin aslı; o efsane fotoğraflar WhatsApp'ın insafına kalıp piksellenmesin diye oturup bu siteyi tasarladık :) Ama asıl derdimiz kocaman bir 'sinerji' yaratmak! Ateş, su, toprak ve sizin o harika enerjiniz birleşsin; ortaya hepimizin girip tebessümle bakabileceği dev bir anı havuzu çıksın istiyoruz. Çünkü bu gece en çok sizinle, sizin gözünüzden güzel... Haydi, ilk anıyı ekleyip o sinerjiyi başlatalım!";
 
         async function runTypewriter() {
-            // YENİ: Ziyaretçi bu oturumda animasyonu daha önce izlediyse direkt son metni göster ve çık
+            const seqElements = document.querySelectorAll('.seq-element');
+            
+            // Ziyaretçi bu oturumda animasyonu daha önce izlediyse direkt son metni ve her şeyi göster
             if (sessionStorage.getItem("hasSeenIntro")) {
+                seqElements.forEach(el => {
+                    el.style.transition = 'none'; // Animasyonsuz anında görünmesi için
+                    el.classList.add('visible');
+                });
                 typeTarget.innerHTML = part2;
                 document.getElementById('text-divider').classList.add('show');
+                typeTarget.classList.add('finished-text');
                 document.getElementById('guest-name').focus();
                 return;
             }
 
             const sleep = ms => new Promise(r => setTimeout(r, ms));
             
+            // İLK GİRİŞ İÇİN SIRALI ANİMASYON BAŞLANGICI
+            await sleep(300);
+            document.getElementById('seq-h1').classList.add('visible');
+            await sleep(600);
+            document.getElementById('seq-h2').classList.add('visible');
+            await sleep(500);
+
             for (let i = 0; i < part1.length; i++) {
                 typeTarget.innerHTML += part1.charAt(i);
-                await sleep(35); 
+                await sleep(20); 
             }
             
             await sleep(1800); 
@@ -387,12 +468,23 @@
             
             for (let i = 0; i < part2.length; i++) {
                 typeTarget.innerHTML += part2.charAt(i);
-                await sleep(35);
+                await sleep(20);
             }
             
-            // YENİ: Daktilo efekti tamamen bittikten sonra çizgiyi (ayracı) göster
-            await sleep(400); 
+            // Daktilo efekti bittikten sonra ayracı göster
+            await sleep(300); 
             document.getElementById('text-divider').classList.add('show');
+            typeTarget.classList.add('finished-text');
+
+            // Geri kalan elemanları sırayla ortaya çıkar
+            await sleep(500);
+            document.getElementById('seq-form').classList.add('visible');
+            await sleep(300);
+            document.getElementById('upload_widget').classList.add('visible');
+            await sleep(300);
+            document.getElementById('seq-gallery-btn').classList.add('visible');
+            await sleep(300);
+            document.getElementById('seq-signature').classList.add('visible');
 
             // Animasyonun tamamlandığını tarayıcı oturum hafızasına kaydet
             sessionStorage.setItem("hasSeenIntro", "true");
@@ -505,8 +597,8 @@
             container.className = 'particles-container';
             document.body.appendChild(container);
 
-            // 25 adet rastgele tanecik oluştur
-            for (let i = 0; i < 25; i++) {
+            // 60 adet rastgele tanecik oluştur (Daha yoğun masalsı etki)
+            for (let i = 0; i < 60; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
                 
